@@ -41,12 +41,12 @@ router.get('/todos', async(req, res) => {
      return res.status(200).json({todos: todos});
 });
 
-// 해야할 일 순서 변경, 완료/해제 API
+// 해야할 일 순서 변경, 완료/해제, 내용 변경 API
 router.patch('/todos/:todoId', async(req, res) => {
     // 1. 변경해야 할 id 가져오기
     const {todoId} = req.params;
-    // 2. 몇 번째 order로 변경할 것인지
-    const {order, done} = req.body;
+    // 2. 몇 번째 order로 변경할 것인지. 즉, 내가 수정할 내용.
+    const {order, done, value} = req.body;
 
     // 3. 현재 나의 order가 무언인지 알아야 한다.
     // Todo 모델을 바탕으로 id를 찾는다.
@@ -79,6 +79,9 @@ router.patch('/todos/:todoId', async(req, res) => {
     // 이는 단순히 done라고만 하면 해야할 일을 해제하는 false일 때는 들어오지 않는 문제가 있다.
     if(done !== undefined) {
         currenTodo.doneAt = done ? new Date() : null;
+    }
+    if(value) {
+        currenTodo.value = value;
     }
 
     await currenTodo.save();
