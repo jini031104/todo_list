@@ -1,5 +1,6 @@
 import express from 'express';
 import connect from './schemas/index.js';
+import TodosRouter from './routes/todos.router.js';
 
 const app = express();
 const PORT = 3000;
@@ -25,7 +26,8 @@ router.get('/', (req, res) => {
 // 앞에 /api가 붙은 경우에만 해당하는 API로 접근 가능
 // 즉, 라우터를 /api 경로에 연결한 것.
 // 따라서 라우터에 정의된 모든 경로는 /api 가 앞에 붙어서 동작하게 된다.
-app.use('/api', router);
+// /api 주소로 접근하였을 때, router와 TodosRouter로 클라이언트의 요청이 전달됩니다.
+app.use('/api', [router, TodosRouter]);
 
 app.listen(PORT, () => {
   console.log(PORT, '포트로 서버가 열렸어요!');
