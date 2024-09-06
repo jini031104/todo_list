@@ -86,4 +86,23 @@ router.patch('/todos/:todoId', async(req, res) => {
     return res.status(200).json({});
 });
 
+// 할 일 삭제 API
+router.delete('/todos/:todoId', async(req, res) => {
+    // 1. todoId 값을 가져온다.
+    const {todoId} = req.params;
+    // 2. 해야 할 일을 찾는다.
+    const todo = await Todo.findById(todoId).exec();
+
+    // 3. 찾는 todoId가 없을 경우
+    if(!todo) {
+        return res.status(404).json({errorMessage: '존재하지 않는 toto 데이터입니다.'});
+    }
+
+    // 4. 실제로 삭제하는 작업
+    // 기본 키를 삭제할 것이기 때문에 _id를 사용한다.
+    await Todo.deleteOne({_id: todoId}).exec();
+
+    return res.status(200).json({});
+});
+
 export default router;
