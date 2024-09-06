@@ -41,4 +41,43 @@ router.get('/todos', async(req, res) => {
      return res.status(200).json({todos: todos});
 });
 
+// 해야할 일 순서 변경 API
+router.patch('/todos/:todoId', async(req, res) => {
+    // 1. 변경해야 할 id 가져오기
+    const {todoId} = req.params;
+    // 2. 몇 번째 order로 변경할 것인지
+    const {order} = req.body;
+
+    // 3. 현재 나의 order가 무언인지 알아야 한다.
+    // Todo 모델을 바탕으로 id를 찾는다.
+    const currenTodo = await Todo.findById(todoId).exec();
+    // 3-1. 만약 가져오려는 id가 없다면 에러
+    if(!currenTodo) {
+        // 클라이언트가 발생시킨 에러는 400.
+        // 이중 404는 클라이언트가 전달한 데이터는 존재하지 않음을 의미
+        return res.status(404).json({errorMessage: "존재하지 않는 해야할 일 입니다."});
+    }
+
+    // 4. order라는 값이 있을 때만 순서를 변경한다.
+    if(order) {
+        // 5. 변경하려는 order 값을 찾는다.
+        // find는 목록 조회. findOne은 하나의 데이터만 조회
+        const targetTodo = await Todo.findOne({order}).exec();
+        // 6. order가 있다면 비즈니스 로직을 수행한다.
+        if(targetTodo) {
+            // 6-1. 내가 가지고 있는 것(바꿔야 하는 순서)과
+            // order로 찾은 것(내가 바꾸고 싶은 것)의 순서를 바꾼다.
+            targetTodo.order = currenTodo.order;
+            // 7. 변경된 값을 DB에 저장한다.
+            await targetTodo.save();
+        }
+        // 8. 나의 order를 내가 바꾸고 싶은 order로 변경한다.
+        currenTodo.order = order;
+    }
+
+    await currenTodo.save();
+
+    return res.status(200).json({});
+});
+
 export default router;
