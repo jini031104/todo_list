@@ -10,7 +10,7 @@ const createdTodoSchema = joi.object({
 });
 
 // 할 일 등록 API
-router.post('/todos', async(req, res) => {
+router.post('/todos', async(req, res, next) => {
     try {
         // req.body 자체로 검증을 진행한다.
         // 왜냐하면 req.body가 객체 형태이기 때문이다.
@@ -42,15 +42,8 @@ router.post('/todos', async(req, res) => {
         // 5. 해야할 일을 클라이언트에게 반환
         return res.status(201).json({todo: todo});
     } catch(error) {
-        console.error(error);
-
-        // 발생한 에러가 예상한 에러인지, 아니면 다른 에러인지 구분을 해야한다.
-        if(error.name === 'ValidationError'){
-            return res.status(400).json({errorMessage: error.message});
-        }
-
-        // 500: 서버에 문제가 있어 에러가 발생했다
-        return res.status(500).json({errorMessage: "서버에서 에러가 발생했다."});
+        // 라우터 다음에 있는 에러 처리 미들웨어를 실행한다.
+        next(error);
     }
 });
 
