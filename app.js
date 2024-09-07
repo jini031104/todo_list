@@ -14,6 +14,11 @@ app.use(express.urlencoded({ extended: true }));
 // 즉, 정적인 파일을 assets 폴더에 있는 파일들을 바탕으로 서빙을 할 거다.
 app.use(express.static('./assets'));
 
+// app.use((req, res, next) => {
+//   console.log('Request URL:', req.originalUrl, ' - ', new Date());
+//   next();
+// });
+
 // 라우터 생성 -> 해당 라우터에다 API 구현
 const router = express.Router();
 
